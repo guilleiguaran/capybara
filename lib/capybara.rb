@@ -446,6 +446,11 @@ Capybara.register_server :puma do |app, port, host, **options|
   Rack::Handler::Puma.run(app, {Host: host, Port: port, Threads: "0:4", workers: 0, daemon: false}.merge(options))
 end
 
+Capybara.register_server :unicorn do |app, port, host, **options|
+  require 'unicorn'
+  Unicorn::HttpServer.new(app, {listeners: "#{host}:#{port}", logger: Logger.new(nil)}.merge(options)).start.join
+end
+
 Capybara.configure do |config|
   config.always_include_port = false
   config.run_server = true

@@ -70,6 +70,16 @@ RSpec.describe Capybara do
       Capybara.server.call(mock_app, 8000)
     end
 
+    it "should have :unicorn registered" do
+      require 'unicorn'
+      mock_app = double('app')
+      mock_server = double('server')
+      allow(mock_server).to receive_message_chain("start.join")
+      Capybara.server = :unicorn
+      expect(Unicorn::HttpServer).to receive(:new).with(mock_app, hash_including(listeners: ":8000")).and_return(mock_server)
+      Capybara.server.call(mock_app, 8000)
+    end
+
     it "should pass options to server" do
       require 'rack/handler/puma'
       mock_app = double('app')
